@@ -8,12 +8,18 @@ import jwt from "jsonwebtoken";
 const registerUser: RequestHandler = async (req, res, next) => {
   try {
     const parse = registerSchema.safeParse(req.body);
-
     if (!parse.success) {
       return next(createHttpError(400, zodErrorFormat(parse.error)));
     }
 
     const { name, email, password, role, image } = req.body;
+
+    // TODO: Find efficient way to check if user already exists
+    // and not to call user twice
+    const existingUser = await usersModel.findOne({ email });
+    if (existingUser) {
+      throw createHttpError(409, "User already exists");
+    }
 
     const user = await usersModel.create({
       name,
@@ -52,7 +58,7 @@ const loginUser: RequestHandler = async (req, res, next) => {
     if (!isMatch) throw createHttpError(401, "Invalid credentials");
 
     const token = jwt.sign(
-      { id: user._id, name: user.name, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );

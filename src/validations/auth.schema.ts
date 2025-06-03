@@ -18,9 +18,11 @@ export const registerSchema = z.object({
     .string({ error: requiredError("Password", "string") })
     .min(8, { error: "Password must be at least 8 characters long" }),
 
-  role: z.enum(["student", "tutor", "admin"], {
-    error: () => "Role must be one of: student, tutor, or admin",
-  }),
+  role: z
+    .enum(["student", "tutor", "admin"], {
+      error: () => "Role must be one of: student, tutor, or admin",
+    })
+    .optional(),
 
   image: z.string().optional().nullable(),
 });
