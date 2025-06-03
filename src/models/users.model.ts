@@ -1,16 +1,31 @@
-import { Schema, model, InferSchemaType } from "mongoose";
+import { Schema, model, InferSchemaType, Document } from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["student", "tutor", "admin"] },
     image: { type: String },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now, immutable: true },
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", async function (next) {
+  const user = this as Document & IUser;
+
+  if (!user.isModified("password")) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+userSchema.methods.comparePassword = async function (password: string) {
+  return await bcrypt.compare(password, this.password);
+};
 
 type IUser = InferSchemaType<typeof userSchema>;
 
