@@ -1,8 +1,9 @@
 import usersModel from "../models/users.model";
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
-import { registerSchema } from "../validations/auth.schema";
+import { loginSchema, registerSchema } from "../validations/auth.schema";
 import { zodErrorFormat } from "../utils/zodErrorFormat.utils";
+import jwt from "jsonwebtoken";
 
 const registerUser: RequestHandler = async (req, res, next) => {
   try {
@@ -33,4 +34,44 @@ const registerUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { registerUser };
+const loginUser: RequestHandler = async (req, res, next) => {
+  try {
+    const parse = loginSchema.safeParse(req.body);
+    if (!parse.success) {
+      throw createHttpError(400, zodErrorFormat(parse.error));
+    }
+
+    const { email, password } = parse.data;
+
+    const user = await usersModel.findOne({ email });
+    if (!user) {
+      throw createHttpError(404, "User not found");
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) throw createHttpError(401, "Invalid credentials");
+
+    const token = jwt.sign(
+      { id: user._id, name: user.name, email: user.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1d" }
+    );
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+        message: "Login successful",
+        success: true,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { registerUser, loginUser };
