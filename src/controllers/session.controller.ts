@@ -173,10 +173,66 @@ const updateSessionStatus: RequestHandler = async (req, res, next) => {
   }
 };
 
+const getSessions: RequestHandler = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+
+    if (status && Object.values(Status).includes(status as Status)) {
+      const sessions = await sessionsModel.find({
+        status,
+      });
+
+      res.status(200).json({
+        message: `${status} sessions fetched successfully`,
+        success: true,
+        data: sessions,
+      });
+    }
+
+    const approvedSessions = await sessionsModel.find({
+      status: Status.ACCEPTED,
+    });
+
+    res.status(200).json({
+      message: "Approved sessions fetched successfully",
+      success: true,
+      data: approvedSessions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getSessionDetails: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    validateObjectIdOrThrow(id, "Session");
+
+    const session = await sessionsModel.findById(id);
+    if (!session) {
+      throw createHttpError(404, {
+        message: "Session not found",
+        errors: "Session not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Session details fetched successfully",
+      success: true,
+      data: session,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSession,
   mySessions,
   resubmitSession,
   getPendingSessions,
   updateSessionStatus,
+  getSessions,
+  getSessionDetails,
 };
