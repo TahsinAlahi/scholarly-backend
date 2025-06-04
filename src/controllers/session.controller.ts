@@ -4,8 +4,8 @@ import createHttpError from "http-errors";
 import { RequestHandler } from "express";
 import { sessionSchema } from "../validations/session.schema";
 import { zodErrorFormat } from "../utils/zodError.utils";
-import { isValidObjectId } from "mongoose";
 import { Status } from "../models/sessions.model";
+import { validateObjectIdOrThrow } from "../utils/validate.utils";
 
 const createSession: RequestHandler = async (req, res, next) => {
   try {
@@ -94,12 +94,7 @@ const resubmitSession: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     // TODO: Compare the email with the one in the session with jwt
-    if (!isValidObjectId(id)) {
-      throw createHttpError(400, {
-        message: "Invalid session id",
-        errors: "Invalid session id",
-      });
-    }
+    validateObjectIdOrThrow(id, "Session");
 
     const session = await sessionsModel.findById(id);
     if (!session) {
@@ -121,4 +116,67 @@ const resubmitSession: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { createSession, mySessions, resubmitSession };
+const getPendingSessions: RequestHandler = async (req, res, next) => {
+  try {
+    const pendingSessions = await sessionsModel.find({
+      status: Status.PENDING,
+    });
+
+    res.status(200).json({
+      message: "Pending sessions fetched successfully",
+      success: true,
+      data: pendingSessions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateSessionStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    validateObjectIdOrThrow(id, "Session");
+
+    const session = await sessionsModel.findById(id);
+    if (!session) {
+      throw createHttpError(404, {
+        message: "Session not found",
+        errors: "Session not found",
+      });
+    }
+
+    const { status, rejectionReason } = req.body;
+    if (!status) {
+      throw createHttpError(400, {
+        message: "Status is required",
+        errors: "Status is required",
+      });
+    }
+    if (!Object.values(Status).includes(status)) {
+      throw createHttpError(400, {
+        message: "Status must be one of: pending, accepted, or rejected",
+        errors: "Unknown status",
+      });
+    }
+
+    session.status = status;
+    session.rejectionReason = rejectionReason;
+    await session.save();
+
+    res.status(200).json({
+      message: "Session status updated successfully",
+      success: true,
+      data: session,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createSession,
+  mySessions,
+  resubmitSession,
+  getPendingSessions,
+  updateSessionStatus,
+};
