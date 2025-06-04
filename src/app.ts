@@ -6,6 +6,7 @@ import createHttpError, { isHttpError } from "http-errors";
 import authRoutes from "./routes/auth.route";
 import adminRoutes from "./routes/admin.route";
 import sessionRoutes from "./routes/session.route";
+import bookingRoutes from "./routes/booking.route";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", adminRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 app.use(/(.*)/, (_req: Request, _res: Response, next: NextFunction) => {
   next(createHttpError(404, "endpoints not found"));
