@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
 import authRoutes from "./routes/auth.route";
+import adminRoutes from "./routes/admin.route";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", adminRoutes);
 
 app.use(/(.*)/, (_req: Request, _res: Response, next: NextFunction) => {
   next(createHttpError(404, "endpoints not found"));

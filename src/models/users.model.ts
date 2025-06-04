@@ -7,6 +7,12 @@ interface IUser extends IUserDocument, Document {
   comparePassword: (password: string) => Promise<boolean>;
 }
 
+export enum UserRole {
+  STUDENT = "student",
+  TUTOR = "tutor",
+  ADMIN = "admin",
+}
+
 const userSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -14,10 +20,10 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ["student", "tutor", "admin"],
+      enum: Object.values(UserRole),
       default: "student",
     },
-    image: { type: String },
+    image: { type: String, default: "" },
     createdAt: { type: Date, default: Date.now, immutable: true },
   },
   {
