@@ -1,11 +1,5 @@
 import { z } from "zod/v4";
-
-const requiredError = (fieldName: string, expectedType: string) => {
-  return (issue: z.core.$ZodRawIssue) =>
-    issue.input === undefined
-      ? `${fieldName} is required`
-      : `${fieldName} must be a ${expectedType}`;
-};
+import { requiredError } from "../utils/zodError.utils";
 
 export const registerSchema = z.object({
   name: z
