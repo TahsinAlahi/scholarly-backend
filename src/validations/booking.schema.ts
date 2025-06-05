@@ -13,10 +13,5 @@ export const bookingSchema = z.object({
     .refine((value) => mongoose.Types.ObjectId.isValid(value), {
       message: "Invalid student ID",
     }),
-  paymentStatus: z
-    .enum(["free", "paid"], {
-      error: () => `Payment status must be one of: free, paid`,
-    })
-    .default("free"),
-  bookedAt: z.iso.datetime().default(new Date().toISOString),
+  bookedAt: z.iso.datetime().default(new Date().toISOString).optional(),
 });

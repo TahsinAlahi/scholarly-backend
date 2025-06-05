@@ -7,7 +7,12 @@ const bookingSchema = new Schema(
     paymentStatus: { type: String, enum: ["paid", "free"], default: "free" },
     bookedAt: { type: Date, default: Date.now, immutable: true },
   },
-  { timestamps: true }
+  {
+    timestamps: {
+      createdAt: false,
+      updatedAt: true,
+    },
+  }
 );
 
 export type IBooking = InferSchemaType<typeof bookingSchema>;
