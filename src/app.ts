@@ -8,6 +8,7 @@ import {
   adminRoutes,
   sessionRoutes,
   bookingRoutes,
+  reviewRoutes,
 } from "./routes";
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", adminRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use(/(.*)/, (_req: Request, _res: Response, next: NextFunction) => {
   next(createHttpError(404, "endpoints not found"));

@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { requiredError } from "../utils/zodError.utils";
+import { requiredError } from "../utils";
 import mongoose from "mongoose";
 
 export const bookingSchema = z.object({
