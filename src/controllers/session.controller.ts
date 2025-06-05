@@ -1,11 +1,8 @@
-import sessionsModel from "../models/sessions.model";
-import usersModel from "../models/users.model";
-import createHttpError from "http-errors";
 import { RequestHandler } from "express";
-import { sessionSchema } from "../validations/session.schema";
-import { zodErrorFormat } from "../utils/zodError.utils";
-import { Status } from "../models/sessions.model";
-import { validateObjectIdOrThrow } from "../utils/validate.utils";
+import createHttpError from "http-errors";
+import { sessionsModel, usersModel, Status } from "../models";
+import { sessionSchema } from "../validations";
+import { zodErrorFormat, validateObjectIdOrThrow } from "../utils";
 
 const createSession: RequestHandler = async (req, res, next) => {
   try {
@@ -72,7 +69,6 @@ const mySessions: RequestHandler = async (req, res, next) => {
         errors: "Email not found",
       });
     }
-
     if (results[0].sessions.length === 0) {
       throw createHttpError(404, {
         message: "No sessions found",
@@ -206,7 +202,6 @@ const getSessions: RequestHandler = async (req, res, next) => {
 const getSessionDetails: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     validateObjectIdOrThrow(id, "Session");
 
     const session = await sessionsModel.findById(id);

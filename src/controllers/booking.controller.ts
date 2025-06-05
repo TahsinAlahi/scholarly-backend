@@ -1,11 +1,8 @@
 import { RequestHandler } from "express";
-import { bookingSchema } from "../validations/booking.schema";
 import createHttpError from "http-errors";
-import { zodErrorFormat } from "../utils/zodError.utils";
-import usersModel from "../models/users.model";
-import sessionsModel from "../models/sessions.model";
-import bookingsModel from "../models/bookings.model";
-import { validateObjectIdOrThrow } from "../utils/validate.utils";
+import { bookingSchema } from "../validations";
+import { usersModel, sessionsModel, bookingsModel } from "../models";
+import { validateObjectIdOrThrow, zodErrorFormat } from "../utils";
 
 const bookFreeSession: RequestHandler = async (req, res, next) => {
   try {
@@ -62,6 +59,7 @@ const getMyBookings: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.body;
     // TODO: get the id and email from jwt
+    validateObjectIdOrThrow(id, "User");
 
     const bookings = await bookingsModel
       .find({ student: id })

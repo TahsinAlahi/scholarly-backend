@@ -1,8 +1,7 @@
-import usersModel from "../models/users.model";
-import createHttpError from "http-errors";
 import { RequestHandler } from "express";
-import { UserRole } from "../models/users.model";
-import { isValidObjectId } from "mongoose";
+import createHttpError from "http-errors";
+import { usersModel, UserRole } from "../models";
+import { validateObjectIdOrThrow } from "../utils";
 
 const getAllUsers: RequestHandler = async (_req, res, next) => {
   try {
@@ -52,12 +51,7 @@ const updateUserRole: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
-    if (!isValidObjectId(id)) {
-      throw createHttpError(400, {
-        message: "Invalid user id",
-        errors: "Invalid user id",
-      });
-    }
+    validateObjectIdOrThrow(id, "User");
 
     if (!role) {
       throw createHttpError(400, {

@@ -1,9 +1,9 @@
-import usersModel from "../models/users.model";
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
-import { loginSchema, registerSchema } from "../validations/auth.schema";
-import { zodErrorFormat } from "../utils/zodError.utils";
 import jwt from "jsonwebtoken";
+import { usersModel } from "../models";
+import { loginSchema, registerSchema } from "../validations";
+import { zodErrorFormat } from "../utils";
 
 const registerUser: RequestHandler = async (req, res, next) => {
   try {

@@ -3,10 +3,12 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
-import authRoutes from "./routes/auth.route";
-import adminRoutes from "./routes/admin.route";
-import sessionRoutes from "./routes/session.route";
-import bookingRoutes from "./routes/booking.route";
+import {
+  authRoutes,
+  adminRoutes,
+  sessionRoutes,
+  bookingRoutes,
+} from "./routes";
 
 const app = express();
 
