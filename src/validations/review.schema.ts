@@ -16,7 +16,17 @@ export const reviewSchema = z.object({
   rating: z
     .number({ error: requiredError("Rating", "string") })
     .min(1, { error: "Rating must be at least 1" })
-    .max(5, { error: "Rating must be at most 5" }),
+    .max(5, { error: "Rating must be at most 5" })
+    .refine(
+      (value) => {
+        if (value.toString().includes(".")) {
+          return value.toString().split(".")[1].length <= 2;
+        } else {
+          return true;
+        }
+      },
+      { error: "Max precision is 2 decimal places" }
+    ),
   comment: z
     .string({ error: requiredError("Comment", "string") })
     .min(5, { error: "Comment must be at least 5 characters long" }),
