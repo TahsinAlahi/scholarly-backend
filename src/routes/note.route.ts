@@ -6,6 +6,8 @@ const router = Router();
 router
   .route("/:id")
   .post(noteController.createNote)
-  .get(noteController.getNotes);
+  .get(noteController.getNotes)
+  .patch(noteController.updateNote)
+  .delete(noteController.deleteNote);
 
 export default router;
