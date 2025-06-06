@@ -4,4 +4,4 @@ export { default as sessionRoutes } from "./session.route";
 export { default as bookingRoutes } from "./booking.route";
 export { default as reviewRoutes } from "./review.route";
 export { default as noteRoutes } from "./note.route";
-export { default as materialRoute } from "./material.route";
+export { default as materialRoutes } from "./material.route";

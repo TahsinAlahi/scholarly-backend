@@ -10,6 +10,7 @@ import {
   bookingRoutes,
   reviewRoutes,
   noteRoutes,
+  materialRoutes,
 } from "./routes";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/api/sessions", sessionRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/materials", materialRoutes);
 
 app.use(/(.*)/, (_req: Request, _res: Response, next: NextFunction) => {
   next(createHttpError(404, "endpoints not found"));
