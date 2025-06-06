@@ -6,12 +6,12 @@ export const bookingSchema = z.object({
   session: z
     .string({ error: requiredError("Session", "string") })
     .refine((value) => mongoose.Types.ObjectId.isValid(value), {
-      message: "Invalid session ID",
+      error: "Invalid session ID",
     }),
   student: z
     .string({ error: requiredError("Student", "string") })
     .refine((value) => mongoose.Types.ObjectId.isValid(value), {
-      message: "Invalid student ID",
+      error: "Invalid student ID",
     }),
   bookedAt: z.iso.datetime().default(new Date().toISOString).optional(),
 });

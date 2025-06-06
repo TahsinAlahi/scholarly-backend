@@ -11,7 +11,11 @@ const sessionSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     tutor: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    status: { type: String, enum: Object.values(Status), default: "pending" },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.PENDING,
+    },
     price: { type: Number, required: true },
     date: { type: Date, required: true },
     tags: [String],
