@@ -49,4 +49,70 @@ const getSessionMaterials: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { postMaterial, getSessionMaterials };
+const updateMaterial: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    validateObjectIdOrThrow(id, "Material");
+
+    const parse = materialsSchema.safeParse(req.body);
+    if (!parse.success) {
+      throw createHttpError(400, zodErrorFormat(parse.error));
+    }
+
+    const material = await materialsModel.findById(id);
+    if (!material) {
+      throw createHttpError(404, {
+        message: "Material not found",
+        errors: "Material not found",
+      });
+    }
+
+    material.title = parse.data.title;
+    if (parse.data.contentType === "link") {
+      material.fileUrl = parse.data.fileUrl;
+      material.contentType = parse.data.contentType;
+      material.noteContent = undefined;
+    } else {
+      material.noteContent = parse.data.noteContent;
+      material.contentType = parse.data.contentType;
+      material.fileUrl = undefined;
+    }
+    await material.save();
+
+    res.status(200).json({
+      message: "Material updated successfully",
+      success: true,
+      data: material,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteMaterial: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    validateObjectIdOrThrow(id, "Material");
+
+    const material = await materialsModel.findByIdAndDelete(id);
+    if (!material) {
+      throw createHttpError(404, {
+        message: "Material not found",
+        errors: "Material not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Material deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export default {
+  postMaterial,
+  getSessionMaterials,
+  updateMaterial,
+  deleteMaterial,
+};
