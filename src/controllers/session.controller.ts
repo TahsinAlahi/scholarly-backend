@@ -6,6 +6,8 @@ import { zodErrorFormat, validateObjectIdOrThrow } from "../utils";
 
 const createSession: RequestHandler = async (req, res, next) => {
   try {
+    // TODO: get the id from jwt and check if tutor
+
     const parse = sessionSchema.safeParse(req.body);
     if (!parse.success) {
       throw createHttpError(400, zodErrorFormat(parse.error));
